@@ -11,7 +11,7 @@ $ pip install -r requirements.txt
 
 ## Start server on Local
 ```sh
-$ flask flask --app app run
+$ flask --app app run
 ```
 
 ## Start server on Production
