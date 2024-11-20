@@ -1,0 +1,14 @@
+# send request to render.com every ten minutes to prevent cold sleep
+name: Warmup HTTP Request
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+
+jobs:
+  http_request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send GET Request
+        run: |
+          curl ${{ secrets.WEATHER_API_URL }}
