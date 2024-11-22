@@ -28,10 +28,6 @@ def debug_paths():
     }
     return jsonify(paths_info)
 
-@app.route('/')
-def index():
-    # Try to serve the file
-    return send_from_directory('../frontend', 'index.html')
 
 
 
