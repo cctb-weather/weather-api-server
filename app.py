@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 # Replace with your actual API key
 WEATHER_API_KEY = "8356db19f8ee3e8ef2fe65204f7d2792"  # api.openweathermap.org
-API_Key = "fbc6b21a336b46f696502554240911"  # WeatherAPI.com
+API_Key = "1c2ae1f094d24861963235832242111"  # WeatherAPI.com
 
 
 @app.route("/debug")
@@ -81,6 +81,7 @@ def get_weather():
 def get_day_forecast():
     lat = request.args.get("lat")
     lon = request.args.get("lon")
+
     try:
         # WeatherAPI.com endpoint for forecast
         url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={lat},{lon}&days=1"
@@ -139,69 +140,60 @@ def get_day_forecast():
 
 @app.route("/week_forecast", methods=["GET"])
 def get_week_forecast():
-    city = request.args.get("city")
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
 
-    if city:  # if city is provided use this api call.
-        try:
-            # WeatherAPI.com endpoint for weekly forecast (7 days)
-            url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={city}&days=7&aqi=no"
+    try:
+        # WeatherAPI.com endpoint for weekly forecast (7 days)
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={lat},{lon}&days=7"
 
-            # Make the API request
-            response = requests.get(url)
-            response.raise_for_status()
+        # Make the API request
+        response = requests.get(url)
+        response.raise_for_status()
 
-            # Parse the response
-            data = response.json()
+        # Parse the response
+        data = response.json()
 
-            # Extract daily forecast data
-            daily_forecast = data["forecast"]["forecastday"]
+        # Extract daily forecast data
+        daily_forecast = data["forecast"]["forecastday"]
 
-            # Process and format the forecast data
-            formatted_forecast = []
-            for day in daily_forecast:
-                formatted_forecast.append(
-                    {
-                        "date": day["date"],
-                        "max_temp_c": day["day"]["maxtemp_c"],
-                        "min_temp_c": day["day"]["mintemp_c"],
-                        "max_temp_f": day["day"]["maxtemp_f"],
-                        "min_temp_f": day["day"]["mintemp_f"],
-                        "avg_humidity": day["day"]["avghumidity"],
-                        "condition": day["day"]["condition"]["text"],
-                        "chance_of_rain": day["day"]["daily_chance_of_rain"],
-                        "total_precipitation_mm": day["day"]["totalprecip_mm"],
-                        "max_wind_kph": day["day"]["maxwind_kph"],
-                        "sunrise": day["astro"]["sunrise"],
-                        "sunset": day["astro"]["sunset"],
-                    }
-                )
-
-            return jsonify(
+        # Process and format the forecast data
+        forecast = []
+        for day in daily_forecast:
+            day_of_week = datetime.strptime(day["date"], "%Y-%m-%d").strftime("%a")
+            forecast.append(
                 {
-                    "status": "success",
-                    "location": data["location"]["name"],
-                    "country": data["location"]["country"],
-                    "forecast": formatted_forecast,
+                    "day_of_week": day_of_week,
+                    "max_temp_c": day["day"]["maxtemp_c"],
+                    "min_temp_c": day["day"]["mintemp_c"],
+                    "weather": {
+                        "text": day["day"]["condition"]["text"],
+                        "code": day["day"]["condition"]["code"],
+                    },
                 }
             )
 
-        except requests.RequestException as e:
-            return jsonify(
-                {"status": "error", "message": f"API request failed: {str(e)}"}
-            ), 500
+        return jsonify(
+            {
+                "status": "success",
+                "forecast": forecast,
+            }
+        )
 
-        except KeyError as e:
-            return jsonify(
-                {"status": "error", "message": f"Error parsing API response: {str(e)}"}
-            ), 500
+    except requests.RequestException as e:
+        return jsonify(
+            {"status": "error", "message": f"API request failed: {str(e)}"}
+        ), 500
 
-        except Exception as e:
-            return jsonify(
-                {"status": "error", "message": f"Unexpected error: {str(e)}"}
-            ), 500
+    except KeyError as e:
+        return jsonify(
+            {"status": "error", "message": f"Error parsing API response: {str(e)}"}
+        ), 500
 
-    else:
-        return jsonify({"error": "Either city or lat/lon parameters are required"}), 400
+    except Exception as e:
+        return jsonify(
+            {"status": "error", "message": f"Unexpected error: {str(e)}"}
+        ), 500
 
 
 if __name__ == "__main__":
