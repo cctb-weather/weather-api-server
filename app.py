@@ -1,16 +1,11 @@
-# HOW TO RUN
-# Go to the work directory: C:\Users\nelsi\OneDrive\CCTB\IST107 - Internet Programming and Web Applications\WeatherApp - localhost
-# Open Anaconda doveAI CMD
-# Run `app.openweather.py`
-# This provides the current weather condition
-
-# USING OPENWEATHER API
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 import requests  # For making requests to an external weather API
 import os
 from datetime import datetime
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Replace with your actual API key
 WEATHER_API_KEY = "8356db19f8ee3e8ef2fe65204f7d2792"  # api.openweathermap.org
