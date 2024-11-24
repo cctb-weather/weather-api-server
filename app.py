@@ -112,7 +112,7 @@ def get_day_forecast():
             forecast.append(
                 {
                     "time": hour_time,
-                    "temp_c": hour["temp_c"],
+                    "temp_c": round(hour["temp_c"], 1),
                     "weather": {
                         "text": hour["condition"]["text"],
                         "code": hour["condition"]["code"],
@@ -166,8 +166,8 @@ def get_week_forecast():
             forecast.append(
                 {
                     "day_of_week": day_of_week,
-                    "max_temp_c": day["day"]["maxtemp_c"],
-                    "min_temp_c": day["day"]["mintemp_c"],
+                    "max_temp_c": float(round(day["day"]["maxtemp_c"])),
+                    "min_temp_c": float(round(day["day"]["mintemp_c"])),
                     "weather": {
                         "text": day["day"]["condition"]["text"],
                         "code": day["day"]["condition"]["code"],
