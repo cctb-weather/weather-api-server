@@ -79,63 +79,62 @@ def get_weather():
 
 @app.route("/day_forecast", methods=["GET"])
 def get_day_forecast():
-    city = request.args.get("city")
-    if city:  # if city is provided use this api call.
-        api_url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={city}&days=1&aqi=no"
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
+    try:
+        # WeatherAPI.com endpoint for forecast
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={lat},{lon}&days=1"
 
-        try:
-            # WeatherAPI.com endpoint for forecast
-            url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={city}&days=1&aqi=no"
+        # Make the API request
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for bad status codes
 
-            # Make the API request
-            response = requests.get(url)
-            response.raise_for_status()  # Raise an exception for bad status codes
+        # Parse the response
+        data = response.json()
 
-            # Parse the response
-            data = response.json()
+        print(data)
 
-            # Extract hourly forecast for the next 24 hours
-            hourly_forecast = data["forecast"]["forecastday"][0]["hour"]
+        # Extract hourly forecast for the next 24 hours
+        location = data["location"]
+        hourly_forecast = data["forecast"]["forecastday"][0]["hour"]
 
-            # Process and format the forecast data
-            formatted_forecast = []
-            for hour in hourly_forecast:
-                # Parse the datetime string and extract just the time
-                hour_time = datetime.strptime(hour["time"], "%Y-%m-%d %H:%M").strftime(
-                    "%H:%M"
-                )
+        # Process and format the forecast data
+        forecast = []
+        for hour in hourly_forecast:
+            # Parse the datetime string and extract just the time
+            hour_time = datetime.strptime(hour["time"], "%Y-%m-%d %H:%M").strftime(
+                "%H:%M"
+            )
 
-                formatted_forecast.append(
-                    {
-                        "time": hour_time,
-                        "temp_c": hour["temp_c"],
-                        "temp_f": hour["temp_f"],
-                        "condition": hour["condition"]["text"],
-                        "humidity": hour["humidity"],
-                        "wind_kph": hour["wind_kph"],
-                        "chance_of_rain": hour["chance_of_rain"],
-                    }
-                )
+            forecast.append(
+                {
+                    "time": hour_time,
+                    "temp_c": hour["temp_c"],
+                    "weather": {
+                        "text": hour["condition"]["text"],
+                        "code": hour["condition"]["code"],
+                    },
+                }
+            )
 
-            return jsonify({"status": "success", "forecast": formatted_forecast})
+        return jsonify(
+            {"status": "success", "forecast": forecast, "city": location["name"]}
+        )
 
-        except requests.RequestException as e:
-            return jsonify(
-                {"status": "error", "message": f"API request failed: {str(e)}"}
-            ), 500
+    except requests.RequestException as e:
+        return jsonify(
+            {"status": "error", "message": f"API request failed: {str(e)}"}
+        ), 500
 
-        except KeyError as e:
-            return jsonify(
-                {"status": "error", "message": f"Error parsing API response: {str(e)}"}
-            ), 500
+    except KeyError as e:
+        return jsonify(
+            {"status": "error", "message": f"Error parsing API response: {str(e)}"}
+        ), 500
 
-        except Exception as e:
-            return jsonify(
-                {"status": "error", "message": f"Unexpected error: {str(e)}"}
-            ), 500
-
-    else:
-        return jsonify({"error": "Either city or lat/lon parameters are required"}), 400
+    except Exception as e:
+        return jsonify(
+            {"status": "error", "message": f"Unexpected error: {str(e)}"}
+        ), 500
 
 
 @app.route("/week_forecast", methods=["GET"])
