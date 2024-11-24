@@ -84,7 +84,7 @@ def get_day_forecast():
 
     try:
         # WeatherAPI.com endpoint for forecast
-        url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={lat},{lon}&days=1"
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={lat},{lon}&days=2"
 
         # Make the API request
         response = requests.get(url)
@@ -93,15 +93,22 @@ def get_day_forecast():
         # Parse the response
         data = response.json()
 
-        print(data)
-
         # Extract hourly forecast for the next 24 hours
         location = data["location"]
-        hourly_forecast = data["forecast"]["forecastday"][0]["hour"]
+
+        forecast_hours = []
+        for forecast_day in data["forecast"]["forecastday"]:
+            for forecast_hour in forecast_day["hour"]:
+                forecast_hours.append(forecast_hour)
+
+        current_hour = int(datetime.now().strftime("%H"))
+        start_hour = current_hour + 1
+        end_hour = current_hour + 8
+        forecast_hours = forecast_hours[start_hour:end_hour]
 
         # Process and format the forecast data
         forecast = []
-        for hour in hourly_forecast:
+        for hour in forecast_hours:
             # Parse the datetime string and extract just the time
             hour_time = datetime.strptime(hour["time"], "%Y-%m-%d %H:%M").strftime(
                 "%H:%M"
