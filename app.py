@@ -166,8 +166,8 @@ def get_week_forecast():
             forecast.append(
                 {
                     "day_of_week": day_of_week,
-                    "max_temp_c": float(round(day["day"]["maxtemp_c"])),
-                    "min_temp_c": float(round(day["day"]["mintemp_c"])),
+                    "max_temp_c": float(round(day["day"]["maxtemp_c"], 1)),
+                    "min_temp_c": float(round(day["day"]["mintemp_c"], 1)),
                     "weather": {
                         "text": day["day"]["condition"]["text"],
                         "code": day["day"]["condition"]["code"],
