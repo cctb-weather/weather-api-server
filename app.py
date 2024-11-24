@@ -54,7 +54,7 @@ def get_weather():
 
         result = {
             "city": location["name"],
-            "temp_c": float(round(current["temp_c"], 1)),
+            "temp_c": current["temp_c"],
             "weather": {
                 "code": current["condition"]["code"],
                 "text": current["condition"]["text"],
@@ -112,7 +112,7 @@ def get_day_forecast():
             forecast.append(
                 {
                     "time": hour_time,
-                    "temp_c": float(round(hour["temp_c"], 1)),
+                    "temp_c": hour["temp_c"],
                     "weather": {
                         "text": hour["condition"]["text"],
                         "code": hour["condition"]["code"],
