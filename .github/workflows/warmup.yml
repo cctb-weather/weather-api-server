@@ -8,7 +8,8 @@ on:
 jobs:
   http_request:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Send GET Request
         run: |
-          curl ${{ secrets.WEATHER_API_URL }}
+          curl ${{ secrets.WEATHER_API_URL }}/health-check
