@@ -13,6 +13,11 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 API_Key = "1c2ae1f094d24861963235832242111"  # WeatherAPI.com
 
 
+@app.route("/health-check")
+def health_check():
+    return jsonify({"status": "ok"})
+
+
 @app.route("/debug")
 def debug_paths():
     paths_info = {
