@@ -3,12 +3,13 @@ import requests  # For making requests to an external weather API
 import os
 from datetime import datetime
 from flask_cors import CORS
+import pytz  # For timezone conversion
+from timezonefinder import TimezoneFinder  # To find timezone based on lat/lon
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Replace with your actual API key
-WEATHER_API_KEY = "8356db19f8ee3e8ef2fe65204f7d2792"  # api.openweathermap.org
 API_Key = "1c2ae1f094d24861963235832242111"  # WeatherAPI.com
 
 
@@ -29,6 +30,12 @@ def debug_paths():
         ),
     }
     return jsonify(paths_info)
+
+
+def get_timezone(lat, lon):
+    tf = TimezoneFinder()
+    timzone = tf.timezone_at(lng=float(lon), lat=float(lat))
+    return pytz.timezone(timzone) if timzone else None
 
 
 @app.route("/weather", methods=["GET"])
@@ -96,7 +103,11 @@ def get_day_forecast():
             for forecast_hour in forecast_day["hour"]:
                 forecast_hours.append(forecast_hour)
 
-        current_hour = int(datetime.now().strftime("%H"))
+        timezone = get_timezone(lat, lon)
+        if timezone is None:
+            raise Exception("Timezone not found for the given coordinates")
+
+        current_hour = int(datetime.now(timezone).strftime("%H"))
         start_hour = current_hour + 1
         end_hour = current_hour + 8
         forecast_hours = forecast_hours[start_hour:end_hour]

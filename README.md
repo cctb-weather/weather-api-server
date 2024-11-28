@@ -7,7 +7,7 @@ API SERVER: [https://weather-api-server-fy1z.onrender.com](https://weather-api-s
 $ git clone https://github.com/cctb-weather/weather-api-server
 $ cd weather-api-server
 $ python -m venv .venv
-$ .venv/bin/activate
+$ source .venv/bin/activate
 $ pip install -r requirements.txt
 ```
 
