@@ -9,8 +9,7 @@ from timezonefinder import TimezoneFinder  # To find timezone based on lat/lon
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Replace with your actual API key
-API_Key = "1c2ae1f094d24861963235832242111"  # WeatherAPI.com
+API_KEY = os.environ.get("WEATHER_API_KEY")
 
 
 @app.route("/health-check")
@@ -50,9 +49,9 @@ def get_weather():
     lon = request.args.get("lon")
 
     if city:  # if city is provided use this api call.
-        url = f"http://api.weatherapi.com/v1/current.json?key={API_Key}&q={city}&days=1&aqi=no"
+        url = f"http://api.weatherapi.com/v1/current.json?key={API_KEY}&q={city}&days=1&aqi=no"
     elif lat or lon:  # if lat and lon provided then use this api call
-        url = f"http://api.weatherapi.com/v1/current.json?key={API_Key}&q={lat},{lon}"
+        url = f"http://api.weatherapi.com/v1/current.json?key={API_KEY}&q={lat},{lon}"
     else:
         return jsonify({"error": "Either city or lat/lon parameters are required"}), 400
 
@@ -91,7 +90,7 @@ def get_day_forecast():
 
     try:
         # WeatherAPI.com endpoint for forecast
-        url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={lat},{lon}&days=2"
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={API_KEY}&q={lat},{lon}&days=2"
 
         # Make the API request
         response = requests.get(url)
@@ -163,7 +162,7 @@ def get_week_forecast():
 
     try:
         # WeatherAPI.com endpoint for weekly forecast (7 days)
-        url = f"http://api.weatherapi.com/v1/forecast.json?key={API_Key}&q={lat},{lon}&days=7"
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={API_KEY}&q={lat},{lon}&days=7"
 
         # Make the API request
         response = requests.get(url)
