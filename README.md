@@ -12,17 +12,18 @@ $ pip install -r requirements.txt
 ```
 
 ## Environment
-create `.env` and fill the values.
+### Local
+create `.env` from `.env.example` and fill the values
 
 ```sh
 $ cp .env.example .env
 ```
 
-### Weather API key
+### WEATHER_API_KEY
 set your weather api key to `WEATHER_API_KEY`
 
 ```sh
-# .env
+# .env or env variables
 WEATHER_API_KEY=xxxxxxxxxxxx
 ```
 
