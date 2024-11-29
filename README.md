@@ -37,3 +37,8 @@ $ flask --app app run
 $ gunicorn app:app
 ```
 
+## Deployment
+When you merge a pull request to main branch, the new changes will deploy automaticaly.
+
+### Platform
+- [Render](https://render.com)
